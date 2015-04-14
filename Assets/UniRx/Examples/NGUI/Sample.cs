@@ -1,23 +1,27 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
+using System.Collections.Generic;
+using UniRx;
 
-namespace UniRx.Examples
+public class Sample : MonoBehaviour
 {
-    public class Sample : MonoBehaviour
+    public UIButton button;
+    public UISlider slider;
+
+    void Start()
     {
+        button.onClick.AsObservable().Subscribe(_ => {
+            
+            Debug.Log("button is clicked!");
 
-        public UIButton button;
+            slider.value -= 0.1f;
+        });
 
-        void Start()
-        {
+        slider.OnValueChangedAsObservable().Subscribe( _=> Debug.Log("slider is moved") );
+    }
 
-            button.onClick.AsObservable().Subscribe(_ => { });
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
+    public void OnClickMe()
+    {
+        Debug.Log("Clicked me!");
     }
 }
