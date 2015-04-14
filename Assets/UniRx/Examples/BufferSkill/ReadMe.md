@@ -1,6 +1,7 @@
-= UniRX RPG Samle = 
+UniRX RPG Samle
+===
 
-Create a Subject and Observable. Note the Observable is subscribed when a Character is no longer alive.
+First, create Subject and Observable. Note the Observable is subscribed when a Character is no longer alive.
 
 ```
     Subject<Character> heroDeadSubject;
@@ -23,3 +24,9 @@ public IEnumerator Battle(Character hero, Character enemy)
     }
 }
 ```
+
+
+Reference
+---
+
+Code of RPG game is borrowed from [Fluent-Simple-RPG-Game](https://github.com/primaryobjects/Fluent-Simple-RPG-Game)
