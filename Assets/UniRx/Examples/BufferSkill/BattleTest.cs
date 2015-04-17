@@ -8,7 +8,6 @@ using FluentInterfaceExample;
 
 using UniRx;
 
-
 public class BattleTest : MonoBehaviour 
 {
 
@@ -19,6 +18,19 @@ public class BattleTest : MonoBehaviour
 
     Subject<Character> heroDeadSubject, enemyDeadSubject;
 
+    public class EndAttackEventMessage : EventArgs
+    {
+        public Character sender { get; set; }
+        public Character target { get; set; }
+
+        public string skillName { get; set; }
+
+        public int damage { get; set; }
+    }
+
+    public static EventHandler<EndAttackEventMessage> EndAttackEvent;
+
+    CompositeDisposable disposables = new CompositeDisposable();
 	// Use this for initialization
 	void Start () 
     {
@@ -40,6 +52,16 @@ public class BattleTest : MonoBehaviour
         
         //This will not subscribe due to the given expression of Where does not match the condition.
         //heroDeadSubject.OnNext(hero);
+
+        Observable.FromEvent<EventHandler<EndAttackEventMessage>, EndAttackEventMessage>(
+            h => (sender, e) => h(e),
+            h => EndAttackEvent += h, h => EndAttackEvent -= h)
+            .Subscribe(x => 
+            {
+                // Create status message.
+                Debug.Log(x.sender.Name + " " + x.skillName + " " + x.target.Name + " for " + x.damage + " damage!");
+            })
+            .AddTo(disposables);
 
         StartCoroutine(DoUpdate());
 	}
@@ -82,7 +104,7 @@ public class BattleTest : MonoBehaviour
                 yield break;
         }
 
-        Debug.LogError("+++ End of Game +++");
+        Debug.LogWarning("+++ End of Game +++");
 
         yield return 0;
 	}
@@ -177,8 +199,8 @@ public class BattleTest : MonoBehaviour
         // Select an attack verb.
         string verb = _attackVerbs[ran.Next(_attackVerbs.Length)];
 
-        // Create status message.
-        result = attacker.Name + " " + verb + " " + defender.Name + " for " + damage + " damage!";
+        // send event
+        EndAttackEvent(attacker, new EndAttackEventMessage { sender = attacker, target = defender, skillName = verb, damage = damage });
 
         return result;
     }
@@ -189,5 +211,10 @@ public class BattleTest : MonoBehaviour
             yield return 0;
 
         yield return 0;
+    }
+
+    void OnDestroy()
+    {
+        disposables.Dispose();
     }
 }
