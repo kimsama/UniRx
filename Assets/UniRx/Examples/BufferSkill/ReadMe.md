@@ -25,6 +25,20 @@ public IEnumerator Battle(Character hero, Character enemy)
 }
 ```
 
+Whenever the end of attack (aka each of turn) we can do execute event and observe it.
+
+```
+        Observable.FromEvent<EventHandler<EndAttackEventMessage>, EndAttackEventMessage>(
+            h => (sender, e) => h(e),
+            h => EndAttackEvent += h, h => EndAttackEvent -= h)
+            .Subscribe(x => 
+            {
+                // Create status message.
+                Debug.Log(x.sender.Name + " " + x.skillName + " " + x.target.Name + " for " + x.damage + " damage!");
+            })
+            .AddTo(disposables);
+
+```
 
 Reference
 ---
