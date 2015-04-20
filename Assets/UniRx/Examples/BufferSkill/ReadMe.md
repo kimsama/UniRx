@@ -40,6 +40,20 @@ Whenever the end of attack (aka each of turn) we can do execute event and observ
 
 ```
 
+And send an event with event message at the end of attack.
+
+```
+    private string Attack(Character attacker, Character defender)
+    {
+        ...
+
+        // send event
+        EndAttackEvent(attacker, new EndAttackEventMessage { sender = attacker, target = defender, skillName = verb, damage = damage });
+
+        return result;
+    }
+```
+
 Reference
 ---
 
