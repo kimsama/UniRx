@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using UniRx;
+using System.Threading;
 
 namespace UniRx.Tests
 {
@@ -15,10 +16,10 @@ namespace UniRx.Tests
                 .Buffer(3)
                 .ToArray()
                 .Wait();
-            xs[0].Is(1, 2, 3);
-            xs[1].Is(4, 5, 6);
-            xs[2].Is(7, 8, 9);
-            xs[3].Is(10);
+            xs[0].IsCollection(1, 2, 3);
+            xs[1].IsCollection(4, 5, 6);
+            xs[2].IsCollection(7, 8, 9);
+            xs[3].IsCollection(10);
         }
 
         [TestMethod]
@@ -28,12 +29,12 @@ namespace UniRx.Tests
 
             var xs = Observable.Range(1, 10)
                 .Concat(hoge)
-                .Buffer(TimeSpan.FromSeconds(3), Scheduler.CurrentThread)
+                .Buffer(TimeSpan.FromSeconds(3))
                 .ToArray()
                 .Wait();
 
-            xs[0].Is(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-            xs[1].Is(1000);
+            xs[0].IsCollection(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            xs[1].IsCollection(1000);
         }
 
         [TestMethod]
@@ -98,7 +99,7 @@ namespace UniRx.Tests
                 .Wait();
 
             xs.Length.Is(1);
-            xs[0].Is(1, 2);
+            xs[0].IsCollection(1, 2);
         }
 
         [TestMethod]
@@ -117,44 +118,44 @@ namespace UniRx.Tests
         {
             // count > skip
             {
-                var xs = Observable.Range(1, 10).Buffer(count: 3, skip: 1)
+                var xs = Observable.Range(1, 10).Buffer(3, 1)
                     .ToArray()
                     .Wait();
 
-                xs[0].Is(1, 2, 3);
-                xs[1].Is(2, 3, 4);
-                xs[2].Is(3, 4, 5);
-                xs[3].Is(4, 5, 6);
-                xs[4].Is(5, 6, 7);
-                xs[5].Is(6, 7, 8);
-                xs[6].Is(7, 8, 9);
-                xs[7].Is(8, 9, 10);
-                xs[8].Is(9, 10);
-                xs[9].Is(10);
+                xs[0].IsCollection(1, 2, 3);
+                xs[1].IsCollection(2, 3, 4);
+                xs[2].IsCollection(3, 4, 5);
+                xs[3].IsCollection(4, 5, 6);
+                xs[4].IsCollection(5, 6, 7);
+                xs[5].IsCollection(6, 7, 8);
+                xs[6].IsCollection(7, 8, 9);
+                xs[7].IsCollection(8, 9, 10);
+                xs[8].IsCollection(9, 10);
+                xs[9].IsCollection(10);
             }
 
             // count == skip
             {
-                var xs = Observable.Range(1, 10).Buffer(count: 3, skip: 3)
+                var xs = Observable.Range(1, 10).Buffer(3, 3)
                     .ToArray()
                     .Wait();
 
-                xs[0].Is(1, 2, 3);
-                xs[1].Is(4, 5, 6);
-                xs[2].Is(7, 8, 9);
-                xs[3].Is(10);
+                xs[0].IsCollection(1, 2, 3);
+                xs[1].IsCollection(4, 5, 6);
+                xs[2].IsCollection(7, 8, 9);
+                xs[3].IsCollection(10);
             }
 
             // count < skip
             {
-                var xs = Observable.Range(1, 20).Buffer(count: 3, skip: 5)
+                var xs = Observable.Range(1, 20).Buffer(3, 5)
                     .ToArray()
                     .Wait();
 
-                xs[0].Is(1, 2, 3);
-                xs[1].Is(6, 7, 8);
-                xs[2].Is(11, 12, 13);
-                xs[3].Is(16, 17, 18);
+                xs[0].IsCollection(1, 2, 3);
+                xs[1].IsCollection(6, 7, 8);
+                xs[2].IsCollection(11, 12, 13);
+                xs[3].IsCollection(16, 17, 18);
             }
         }
 
@@ -171,9 +172,9 @@ namespace UniRx.Tests
                     .Wait();
 
                 xs.Length.Is(3);
-                xs[0].Is(1000); // 1sec
-                xs[1].Is(99, 1, 2, 3, 4); // 1.5sec -> buffer
-                xs[2].Is(5, 6, 7); // next 1sec
+                xs[0].IsCollection(1000); // 1sec
+                xs[1].IsCollection(99, 1, 2, 3, 4); // 1.5sec -> buffer
+                xs[2].IsCollection(5, 6, 7); // next 1sec
             }
             // time...count...time
             {
@@ -187,9 +188,9 @@ namespace UniRx.Tests
                     .Wait();
 
                 xs.Length.Is(3);
-                xs[0].Is(1000); // 1sec
-                xs[1].Is(99, 1, 2, 3, 4); // 1.5sec -> buffer
-                xs[2].Is(5, 6, 7); // next 1sec
+                xs[0].IsCollection(1000); // 1sec
+                xs[1].IsCollection(99, 1, 2, 3, 4); // 1.5sec -> buffer
+                xs[2].IsCollection(5, 6, 7); // next 1sec
             }
             // time(before is canceled)
             {
@@ -209,13 +210,45 @@ namespace UniRx.Tests
                     .Wait();
 
                 // after 2 seconds, buffer is flush by count
-                result[0].xs.Is(10, 1, 2);
+                result[0].xs.IsCollection(10, 1, 2);
                 result[0].currentSpan.Is(x => TimeSpan.FromMilliseconds(1800) <= x && x <= TimeSpan.FromMilliseconds(2200));
 
                 // after 3 seconds, buffer is flush by time
-                result[1].xs.Is(1000);
+                result[1].xs.IsCollection(1000);
                 result[1].currentSpan.Is(x => TimeSpan.FromMilliseconds(4800) <= x && x <= TimeSpan.FromMilliseconds(5200));
             }
+        }
+
+        [TestMethod]
+        public void BufferTimeAndCountTimeSide()
+        {
+            var subject = new Subject<int>();
+            var record = subject.Buffer(TimeSpan.FromMilliseconds(100), 100).Take(5).Record();
+
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+
+            record.Values.Count.Is(5);
+        }
+
+        [TestMethod]
+        public void BufferWindowBoundaries()
+        {
+            var subject = new Subject<int>();
+            var boundaries = new Subject<int>();
+
+            var record = subject.Buffer(boundaries).Record();
+
+            subject.OnNext(1);
+            subject.OnNext(2);
+            record.Values.Count.Is(0);
+
+            boundaries.OnNext(0);
+            record.Values.Count.Is(1);
+            record.Values[0].IsCollection(1, 2);
+
+            boundaries.OnNext(0);
+            record.Values.Count.Is(2);
+            record.Values[1].Count.Is(0);
         }
 
         [TestMethod]
@@ -251,6 +284,35 @@ namespace UniRx.Tests
 
                 s.OnCompleted();
 
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.First(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnError(new Exception());
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.First(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnNext(10);
+                s.OnError(new Exception());
+                l[0].Value.Is(10);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.First(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnCompleted();
                 l[0].Kind.Is(NotificationKind.OnError);
             }
         }
@@ -291,13 +353,44 @@ namespace UniRx.Tests
                 l[0].Value.Is(0);
                 l[1].Kind.Is(NotificationKind.OnCompleted);
             }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.FirstOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnCompleted();
+
+                l[0].Value.Is(0);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.FirstOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnNext(10);
+
+                l[0].Value.Is(10);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.FirstOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnError(new Exception());
+
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
         }
 
         [TestMethod]
         public void Last()
         {
             var s = new Subject<int>();
-
             var l = new List<Notification<int>>();
             {
                 s.Last().Materialize().Subscribe(l.Add);
@@ -329,6 +422,43 @@ namespace UniRx.Tests
             {
                 s.Last().Materialize().Subscribe(l.Add);
 
+                s.OnCompleted();
+
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
+
+            s = new Subject<int>();
+            l = new List<Notification<int>>();
+            {
+                s.Last(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+
+                s.OnNext(5);
+                s.OnNext(20);
+                s.OnNext(9);
+                s.OnCompleted();
+
+                l[0].Value.Is(20);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.Last(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+
+                s.OnNext(5);
+                s.OnNext(10);
+                s.OnError(new Exception());
+
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.Last(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(5);
+                s.OnNext(9);
                 s.OnCompleted();
 
                 l[0].Kind.Is(NotificationKind.OnError);
@@ -376,13 +506,49 @@ namespace UniRx.Tests
                 l[0].Value.Is(0);
                 l[1].Kind.Is(NotificationKind.OnCompleted);
             }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.LastOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnCompleted();
+
+                l[0].Value.Is(0);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l = new List<Notification<int>>();
+            {
+                s.LastOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+
+                s.OnNext(5);
+                s.OnNext(20);
+                s.OnNext(9);
+                s.OnCompleted();
+
+                l[0].Value.Is(20);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.LastOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+
+                s.OnNext(5);
+                s.OnNext(10);
+                s.OnError(new Exception());
+
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
         }
 
         [TestMethod]
         public void Single()
         {
             var s = new Subject<int>();
-
             var l = new List<Notification<int>>();
             {
                 s.Single().Materialize().Subscribe(l.Add);
@@ -421,6 +587,62 @@ namespace UniRx.Tests
             l.Clear();
             {
                 s.Single().Materialize().Subscribe(l.Add);
+
+                s.OnCompleted();
+
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
+
+            s = new Subject<int>();
+            l = new List<Notification<int>>();
+            {
+                s.Single(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnNext(10);
+                s.OnCompleted();
+
+                l[0].Value.Is(10);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l = new List<Notification<int>>();
+            {
+                s.Single(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(10);
+                s.OnNext(9);
+                s.OnCompleted();
+
+                l[0].Value.Is(10);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.Single(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(20);
+                s.OnNext(30);
+                s.OnError(new Exception());
+
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.Single(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+
+                s.OnNext(10);
+                s.OnError(new Exception());
+
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.Single(x => x % 2 == 0).Materialize().Subscribe(l.Add);
 
                 s.OnCompleted();
 
@@ -477,6 +699,74 @@ namespace UniRx.Tests
                 l[0].Value.Is(0);
                 l[1].Kind.Is(NotificationKind.OnCompleted);
             }
+
+            s = new Subject<int>();
+            l = new List<Notification<int>>();
+            {
+                s.SingleOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnNext(10);
+                s.OnCompleted();
+
+                l[0].Value.Is(10);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l = new List<Notification<int>>();
+            {
+                s.SingleOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(10);
+                s.OnNext(9);
+                s.OnCompleted();
+
+                l[0].Value.Is(10);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.SingleOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(20);
+                s.OnNext(30);
+                s.OnError(new Exception());
+
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.SingleOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+
+                s.OnNext(10);
+                s.OnError(new Exception());
+
+                l[0].Kind.Is(NotificationKind.OnError);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.SingleOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+
+                s.OnCompleted();
+
+                l[0].Value.Is(0);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
+
+            s = new Subject<int>();
+            l.Clear();
+            {
+                s.SingleOrDefault(x => x % 2 == 0).Materialize().Subscribe(l.Add);
+                s.OnNext(9);
+                s.OnCompleted();
+
+                l[0].Value.Is(0);
+                l[1].Kind.Is(NotificationKind.OnCompleted);
+            }
         }
 
         [TestMethod]
@@ -486,7 +776,7 @@ namespace UniRx.Tests
                 .TakeWhile(x => x <= 5)
                 .ToArray()
                 .Wait()
-                .Is(1, 2, 3, 4, 5);
+                .IsCollection(1, 2, 3, 4, 5);
         }
 
         [TestMethod]
@@ -541,7 +831,48 @@ namespace UniRx.Tests
                 .Skip(3)
                 .ToArray()
                 .Wait()
-                .Is(4, 5, 6, 7, 8, 9, 10);
+                .IsCollection(4, 5, 6, 7, 8, 9, 10);
+
+            {
+                var range = Observable.Range(1, 10);
+
+                AssertEx.Throws<ArgumentOutOfRangeException>(() => range.Skip(-1));
+
+                range.Skip(10).ToArray().Wait().Length.Is(0);
+
+                range.Skip(3).ToArrayWait().IsCollection(4, 5, 6, 7, 8, 9, 10);
+                range.Skip(3).Skip(2).ToArrayWait().IsCollection(6, 7, 8, 9, 10);
+            }
+        }
+
+        [TestMethod]
+        public void SkipTime()
+        {
+            {
+                var now = DateTime.Now;
+                var timer = Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromMilliseconds(10))
+                    .Timestamp();
+
+                var v = timer.Skip(TimeSpan.FromMilliseconds(300))
+                    .First()
+                    .Wait();
+
+                (v.Timestamp - now).Is(x => (TimeSpan.FromMilliseconds(250) <= x && x <= TimeSpan.FromMilliseconds(350)));
+            }
+
+            {
+                var now = DateTime.Now;
+                var timer = Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromMilliseconds(10))
+                    .Timestamp();
+
+                var v = timer
+                    .Skip(TimeSpan.FromMilliseconds(100))
+                    .Skip(TimeSpan.FromMilliseconds(300))
+                    .First()
+                    .Wait();
+
+                (v.Timestamp - now).Is(x => (TimeSpan.FromMilliseconds(250) <= x && x <= TimeSpan.FromMilliseconds(350)));
+            }
         }
 
         [TestMethod]
@@ -551,7 +882,154 @@ namespace UniRx.Tests
                 .SkipWhile(x => x <= 5)
                 .ToArray()
                 .Wait()
-                .Is(6, 7, 8, 9, 10);
+                .IsCollection(6, 7, 8, 9, 10);
+        }
+
+        [TestMethod]
+        public void SkipWhileIndex()
+        {
+            Observable.Range(1, 10)
+                .SkipWhile((x, i) => i <= 5)
+                .ToArray()
+                .Wait()
+                .IsCollection(7, 8, 9, 10);
+        }
+
+
+        [TestMethod]
+        public void SkipUntil()
+        {
+            {
+                var a = new Subject<int>();
+                var b = new Subject<int>();
+
+                var l = new List<Notification<int>>();
+
+                a.SkipUntil(b).Materialize().Subscribe(l.Add);
+
+                a.OnNext(1);
+                a.OnNext(10);
+                b.OnNext(1000);
+
+                l.Count.Is(0);
+
+                b.OnNext(99999);
+                b.HasObservers.IsFalse();
+
+                a.OnNext(1);
+                a.OnNext(10);
+
+                l[0].Value.Is(1);
+                l[1].Value.Is(10);
+            }
+            {
+                var a = new Subject<int>();
+                var b = new Subject<int>();
+
+                var l = new List<Notification<int>>();
+
+                a.SkipUntil(b).Materialize().Subscribe(l.Add);
+
+                a.OnNext(1);
+                a.OnNext(10);
+                b.OnCompleted();
+                l.Count.Is(0);
+
+                a.OnNext(100);
+                l.Count.Is(0);
+            }
+        }
+
+        [TestMethod]
+        public void Pairwise()
+        {
+            var xs = Observable.Range(1, 5).Pairwise((x, y) => x + ":" + y).ToArrayWait();
+            xs.IsCollection("1:2", "2:3", "3:4", "4:5");
+        }
+
+        [TestMethod]
+        public void Pairwise2()
+        {
+            var xs = Observable.Range(1, 5).Pairwise().ToArrayWait();
+            xs[0].Previous.Is(1); xs[0].Current.Is(2);
+            xs[1].Previous.Is(2); xs[1].Current.Is(3);
+            xs[2].Previous.Is(3); xs[2].Current.Is(4);
+            xs[3].Previous.Is(4); xs[3].Current.Is(5);
+        }
+
+        [TestMethod]
+        public void TakeLast()
+        {
+            var record = Observable.Range(1, 2).TakeLast(3).Record();
+            record.Values.IsCollection(1, 2);
+
+            record = Observable.Range(1, 3).TakeLast(3).Record();
+            record.Values.IsCollection(1, 2, 3);
+
+            record = Observable.Range(1, 4).TakeLast(3).Record();
+            record.Values.IsCollection(2, 3, 4);
+
+            record = Observable.Range(1, 10).TakeLast(3).Record();
+            record.Values.IsCollection(8, 9, 10);
+
+            record = Observable.Empty<int>().TakeLast(3).Record();
+            record.Notifications[0].Kind.Is(NotificationKind.OnCompleted);
+        }
+
+        [TestMethod]
+        public void TakeLastDuration()
+        {
+            var subject = new Subject<long>();
+
+            var record = subject.Record();
+            subject.OnCompleted();
+            record.Notifications[0].Kind.Is(NotificationKind.OnCompleted);
+
+            // 0, 200, 400, 600, 800
+            var data = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(200))
+                .Take(5)
+                .TakeLast(TimeSpan.FromMilliseconds(250))
+                .ToArrayWait();
+
+            data.IsCollection(3, 4);
+        }
+
+        [TestMethod]
+        public void GroupBy()
+        {
+            var subject = new Subject<int>();
+
+            RecordObserver<int> a = null;
+            RecordObserver<int> b = null;
+            RecordObserver<int> c = null;
+            subject.GroupBy(x => x % 3)
+                .Subscribe(x =>
+                {
+                    if (x.Key == 0)
+                    {
+                        a = x.Record();
+                    }
+                    else if (x.Key == 1)
+                    {
+                        b = x.Record();
+                    }
+                    else if (x.Key == 2)
+                    {
+                        c = x.Record();
+                    }
+                });
+
+            subject.OnNext(99);
+            subject.OnNext(100);
+            subject.OnNext(101);
+
+            subject.OnNext(0);
+            subject.OnNext(1);
+            subject.OnNext(2);
+
+            a.Values.IsCollection(99, 0);
+            b.Values.IsCollection(100, 1);
+            c.Values.IsCollection(101, 2);
         }
     }
 }

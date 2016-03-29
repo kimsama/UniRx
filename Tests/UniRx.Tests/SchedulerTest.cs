@@ -33,7 +33,7 @@ namespace UniRx.Tests
         public void CurrentThread()
         {
             var hoge = ScheduleTasks(Scheduler.CurrentThread);
-            hoge.Is("outer start.", "outer end.", "--innerAction start.", "--innerAction end.", "----leafAction.");
+            hoge.IsCollection("outer start.", "outer end.", "--innerAction start.", "--innerAction end.", "----leafAction.");
         }
         [TestMethod]
         public void CurrentThread2()
@@ -56,7 +56,7 @@ namespace UniRx.Tests
                 });
             });
 
-            list.Is("one", "after 1", "after 3");
+            list.IsCollection("one", "after 1", "after 3");
         }
 
         [TestMethod]
@@ -81,14 +81,14 @@ namespace UniRx.Tests
                 });
             });
 
-            list.Is("one", "after 1");
+            list.IsCollection("one", "after 1");
         }
 
         [TestMethod]
         public void Immediate()
         {
             var hoge = ScheduleTasks(Scheduler.Immediate);
-            hoge.Is("outer start.", "--innerAction start.", "----leafAction.", "--innerAction end.", "outer end.");
+            hoge.IsCollection("outer start.", "--innerAction start.", "----leafAction.", "--innerAction end.", "outer end.");
         }
     }
 }

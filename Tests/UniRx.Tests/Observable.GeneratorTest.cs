@@ -11,7 +11,7 @@ namespace UniRx.Tests
         public void Empty()
         {
             var material = Observable.Empty<Unit>().Materialize().ToArray().Wait();
-            material.Is(Notification.CreateOnCompleted<Unit>());
+            material.IsCollection(Notification.CreateOnCompleted<Unit>());
         }
 
         [TestMethod]
@@ -24,28 +24,33 @@ namespace UniRx.Tests
         [TestMethod]
         public void Return()
         {
-            Observable.Return(100).Materialize().ToArray().Wait().Is(Notification.CreateOnNext(100), Notification.CreateOnCompleted<int>());
+            Observable.Return(100).Materialize().ToArray().Wait().IsCollection(Notification.CreateOnNext(100), Notification.CreateOnCompleted<int>());
         }
 
         [TestMethod]
         public void Range()
         {
-            Observable.Range(1, 5).ToArray().Wait().Is(1, 2, 3, 4, 5);
+            Observable.Range(1, 5).ToArray().Wait().IsCollection(1, 2, 3, 4, 5);
         }
 
         [TestMethod]
         public void Repeat()
         {
-            Observable.Range(1, 3, Scheduler.CurrentThread)
+            var xs = Observable.Range(1, 3, Scheduler.CurrentThread)
                 .Concat(Observable.Return(100))
                 .Repeat()
                 .Take(10)
                 .ToArray()
-                .Wait()
-                .Is(1, 2, 3, 100, 1, 2, 3, 100, 1, 2);
-            Observable.Repeat(100).Take(5).ToArray().Wait().Is(100, 100, 100, 100, 100);
+                .Wait();
+            xs.IsCollection(1, 2, 3, 100, 1, 2, 3, 100, 1, 2);
+            Observable.Repeat(100).Take(5).ToArray().Wait().IsCollection(100, 100, 100, 100, 100);
+        }
 
-            Observable.Repeat(5, 3).ToArray().Wait().Is(5, 5, 5);
+        [TestMethod]
+        public void RepeatStatic()
+        {
+            var xss = Observable.Repeat(5, 3).ToArray().Wait();
+            xss.IsCollection(5, 5, 5);
         }
 
         [TestMethod]
@@ -63,7 +68,7 @@ namespace UniRx.Tests
                     })
                     .Subscribe(x => msgs.Add(x.ToString()), e => msgs.Add(e.Message), () => msgs.Add("comp"));
 
-                msgs.Is("DO:1", "1", "DO:10", "x:1 y:10", "11", "DO:100", "exception");
+                msgs.IsCollection("DO:1", "1", "DO:10", "x:1 y:10", "11", "DO:100", "exception");
             }
 
             {
@@ -78,7 +83,7 @@ namespace UniRx.Tests
                     })
                     .Subscribe(x => msgs.Add(x.ToString()), e => msgs.Add(e.Message), () => msgs.Add("comp"));
 
-                msgs.Is("DO:1", "1", "DO:10", "x:1 y:10", "11", "DO:100", "exception",
+                msgs.IsCollection("DO:1", "1", "DO:10", "x:1 y:10", "11", "DO:100", "exception",
                     "DO:1000", "x:11 y:1000",
                     "DO:10000", "x:1011 y:10000",
                     "DO:20000", "x:11011 y:20000"
@@ -90,7 +95,7 @@ namespace UniRx.Tests
         public void Throw()
         {
             var ex = new Exception();
-            Observable.Throw<string>(ex).Materialize().ToArray().Wait().Is(Notification.CreateOnError<string>(ex));
+            Observable.Throw<string>(ex).Materialize().ToArray().Wait().IsCollection(Notification.CreateOnError<string>(ex));
         }
     }
 }

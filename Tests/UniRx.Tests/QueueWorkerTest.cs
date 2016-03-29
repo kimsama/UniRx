@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using UniRx.InternalUtil;
 
 namespace UniRx.Tests
 {
@@ -14,75 +12,75 @@ namespace UniRx.Tests
         [TestMethod]
         public void Enq()
         {
-            var q = new ThreadSafeQueueWorker();
+            var q = new UniRx.InternalUtil.ThreadSafeQueueWorker();
 
             var l = new List<int>();
-            q.Enqueue(() => l.Add(1));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-1)));
-            q.Enqueue(() => l.Add(2));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-2)));
-            q.Enqueue(() => l.Add(3));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-3)));
-            q.Enqueue(() => l.Add(4));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-4)));
-            q.Enqueue(() => l.Add(5));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-5)));
-            q.Enqueue(() => l.Add(6));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-6)));
-            q.Enqueue(() => l.Add(7));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-7)));
-            q.Enqueue(() => l.Add(8));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-8)));
-            q.Enqueue(() => l.Add(9));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-9)));
-            q.Enqueue(() => l.Add(10));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-10)));
-            q.Enqueue(() => l.Add(11));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-11)));
-            q.Enqueue(() => l.Add(12));
+            q.Enqueue(x => l.Add((int)x), 1);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -1);
+            q.Enqueue(x => l.Add((int)x), 2);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -2);
+            q.Enqueue(x => l.Add((int)x), 3);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -3);
+            q.Enqueue(x => l.Add((int)x), 4);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -4);
+            q.Enqueue(x => l.Add((int)x), 5);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -5);
+            q.Enqueue(x => l.Add((int)x), 6);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -6);
+            q.Enqueue(x => l.Add((int)x), 7);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -7);
+            q.Enqueue(x => l.Add((int)x), 8);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -8);
+            q.Enqueue(x => l.Add((int)x), 9);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -9);
+            q.Enqueue(x => l.Add((int)x), 10);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -10);
+            q.Enqueue(x => l.Add((int)x), 11);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -11);
+            q.Enqueue(x => l.Add((int)x), 12);
 
             q.ExecuteAll(ex => { });
 
-            l.Is(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+            l.IsCollection(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
             l.Clear();
 
             q.ExecuteAll(ex => { });
-            l.Is(-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
+            l.IsCollection(-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
             l.Clear();
 
             q.ExecuteAll(ex => { });
             l.Count.Is(0);
 
-            q.Enqueue(() => l.Add(1));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-1)));
-            q.Enqueue(() => l.Add(2));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-2)));
-            q.Enqueue(() => l.Add(3));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-3)));
-            q.Enqueue(() => l.Add(4));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-4)));
-            q.Enqueue(() => l.Add(5));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-5)));
-            q.Enqueue(() => l.Add(6));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-6)));
-            q.Enqueue(() => l.Add(7));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-7)));
-            q.Enqueue(() => l.Add(8));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-8)));
-            q.Enqueue(() => l.Add(9));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-9)));
-            q.Enqueue(() => l.Add(10));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-10)));
-            q.Enqueue(() => l.Add(11));
-            q.Enqueue(() => q.Enqueue(() => l.Add(-11)));
-            q.Enqueue(() => l.Add(12));
+            q.Enqueue(x => l.Add((int)x), 1);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -1);
+            q.Enqueue(x => l.Add((int)x), 2);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -2);
+            q.Enqueue(x => l.Add((int)x), 3);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -3);
+            q.Enqueue(x => l.Add((int)x), 4);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -4);
+            q.Enqueue(x => l.Add((int)x), 5);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -5);
+            q.Enqueue(x => l.Add((int)x), 6);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -6);
+            q.Enqueue(x => l.Add((int)x), 7);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -7);
+            q.Enqueue(x => l.Add((int)x), 8);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -8);
+            q.Enqueue(x => l.Add((int)x), 9);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -9);
+            q.Enqueue(x => l.Add((int)x), 10);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -10);
+            q.Enqueue(x => l.Add((int)x), 11);
+            q.Enqueue(x => q.Enqueue(_ => l.Add((int)x), null), -11);
+            q.Enqueue(x => l.Add((int)x), 12);
 
             q.ExecuteAll(ex => { });
-            l.Is(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+            l.IsCollection(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
             l.Clear();
 
             q.ExecuteAll(ex => { });
-            l.Is(-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
+            l.IsCollection(-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11);
             l.Clear();
 
             q.ExecuteAll(ex => { });

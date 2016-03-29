@@ -24,7 +24,7 @@ namespace UniRx.Tests
                 subject.OnNext(10);
                 subject.OnNext(100);
                 subject.OnNext(1000);
-                onNext.Is(1, 10, 100, 1000);
+                onNext.IsCollection(1, 10, 100, 1000);
 
                 subject.OnCompleted();
                 onCompletedCallCount.Is(1);
@@ -61,7 +61,7 @@ namespace UniRx.Tests
                 subject.OnNext(10);
                 subject.OnNext(100);
                 subject.OnNext(1000);
-                onNext.Is(1, 10, 100, 1000);
+                onNext.IsCollection(1, 10, 100, 1000);
 
                 subject.OnError(new Exception());
                 exception.Count.Is(1);
@@ -135,12 +135,12 @@ namespace UniRx.Tests
             var listD = new List<int>();
             var listE = new List<int>();
 
-            var listDSubscription = subject.Subscribe(x => listD.Add(x));
+            subject.Subscribe(x => listD.Add(x));
             subject.HasObservers.IsTrue();
             subject.OnNext(1);
             listD[0].Is(1);
 
-            var listESubscription = subject.Subscribe(x => listE.Add(x));
+            subject.Subscribe(x => listE.Add(x));
             subject.HasObservers.IsTrue();
             subject.OnNext(2);
             listD[1].Is(2);
@@ -172,7 +172,7 @@ namespace UniRx.Tests
                 onNext.Count.Is(0);
 
                 subject.OnCompleted();
-                onNext.Is(1000);
+                onNext.IsCollection(1000);
                 onCompletedCallCount.Is(1);
 
                 subject.OnNext(1);
@@ -187,7 +187,7 @@ namespace UniRx.Tests
 
                 // ++subscription
                 subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
-                onNext.Is(1000, 1000);
+                onNext.IsCollection(1000, 1000);
                 exception.Count.Is(0);
                 onCompletedCallCount.Is(2);
             }
@@ -240,20 +240,20 @@ namespace UniRx.Tests
                 int onCompletedCallCount = 0;
                 var _ = subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
 
-                onNext.Is(3333);
+                onNext.IsCollection(3333);
 
                 subject.OnNext(1);
                 subject.OnNext(10);
                 subject.OnNext(100);
                 subject.OnNext(1000);
 
-                onNext.Is(3333, 1, 10, 100, 1000);
+                onNext.IsCollection(3333, 1, 10, 100, 1000);
 
                 // re subscription
                 onNext.Clear();
                 _.Dispose();
                 subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
-                onNext.Is(1000);
+                onNext.IsCollection(1000);
 
                 subject.OnCompleted();
                 onCompletedCallCount.Is(1);
@@ -290,7 +290,7 @@ namespace UniRx.Tests
                 subject.OnNext(10);
                 subject.OnNext(100);
                 subject.OnNext(1000);
-                onNext.Is(3333, 1, 10, 100, 1000);
+                onNext.IsCollection(3333, 1, 10, 100, 1000);
 
                 subject.OnError(new Exception());
                 exception.Count.Is(1);
@@ -332,13 +332,13 @@ namespace UniRx.Tests
                 subject.OnNext(10);
                 subject.OnNext(100);
                 subject.OnNext(1000);
-                onNext.Is(1, 10, 100, 1000);
+                onNext.IsCollection(1, 10, 100, 1000);
 
                 // replay subscription
                 onNext.Clear();
                 _.Dispose();
                 subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
-                onNext.Is(1, 10, 100, 1000);
+                onNext.IsCollection(1, 10, 100, 1000);
 
                 subject.OnCompleted();
                 onCompletedCallCount.Is(1);
@@ -357,7 +357,7 @@ namespace UniRx.Tests
                 onNext.Clear();
                 onCompletedCallCount = 0;
                 subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
-                onNext.Is(1, 10, 100, 1000);
+                onNext.IsCollection(1, 10, 100, 1000);
                 exception.Count.Is(0);
                 onCompletedCallCount.Is(1);
             }
@@ -375,7 +375,7 @@ namespace UniRx.Tests
                 subject.OnNext(10);
                 subject.OnNext(100);
                 subject.OnNext(1000);
-                onNext.Is(1, 10, 100, 1000);
+                onNext.IsCollection(1, 10, 100, 1000);
 
                 subject.OnError(new Exception());
                 exception.Count.Is(1);
@@ -395,7 +395,7 @@ namespace UniRx.Tests
                 exception.Clear();
                 onCompletedCallCount = 0;
                 subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
-                onNext.Is(1, 10, 100, 1000);
+                onNext.IsCollection(1, 10, 100, 1000);
                 exception.Count.Is(1);
                 onCompletedCallCount.Is(0);
             }
@@ -415,16 +415,16 @@ namespace UniRx.Tests
             subject.OnNext(100);
             subject.OnNext(1000);
             subject.OnNext(10000);
-            onNext.Is(100, 1000, 10000);  // cut 1, 10
+            onNext.IsCollection(100, 1000, 10000);  // cut 1, 10
 
             // replay subscription
             onNext.Clear();
             _.Dispose();
             subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
-            onNext.Is(100, 1000, 10000);
+            onNext.IsCollection(100, 1000, 10000);
 
             subject.OnNext(20000);
-            onNext.Is(1000, 10000, 20000);
+            onNext.IsCollection(1000, 10000, 20000);
 
             subject.OnCompleted();
             onCompletedCallCount.Is(1);
@@ -452,7 +452,7 @@ namespace UniRx.Tests
             _.Dispose();
             onNext.Clear();
             subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
-            onNext.Is(10, 100);
+            onNext.IsCollection(10, 100);
 
             subject.OnNext(1000); // 900
             Thread.Sleep(TimeSpan.FromMilliseconds(300));
@@ -460,7 +460,7 @@ namespace UniRx.Tests
             _.Dispose();
             onNext.Clear();
             subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
-            onNext.Is(100, 1000);
+            onNext.IsCollection(100, 1000);
 
             subject.OnNext(10000); // 1200
             Thread.Sleep(TimeSpan.FromMilliseconds(500));
@@ -474,7 +474,7 @@ namespace UniRx.Tests
             _.Dispose();
             onNext.Clear();
             subject.Subscribe(x => onNext.Add(x), x => exception.Add(x), () => onCompletedCallCount++);
-            onNext.Is(10000, 2, 20);
+            onNext.IsCollection(10000, 2, 20);
         }
     }
 }
