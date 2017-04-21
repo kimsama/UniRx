@@ -18,9 +18,11 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_5_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_3_OR_NEWER;UNITY_5_4_0;UNITY_5_3_0;UNITY_5_3;UNITY_5;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_4_6_FEATURES;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_PRO_LICENSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\UniRx.xml</DocumentationFile>
+    <NoWarn>1591,1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>1591,1573</NoWarn>
+    <DocumentationFile>bin\Release\UniRx.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -53,6 +57,9 @@
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Disposables\BooleanDisposable.cs">
       <Link>Disposables\BooleanDisposable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Disposables\CancellationDisposable.cs">
+      <Link>Disposables\CancellationDisposable.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Disposables\CompositeDisposable.cs">
       <Link>Disposables\CompositeDisposable.cs</Link>
@@ -99,6 +106,9 @@
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\InternalUtil\ListObserver.cs">
       <Link>InternalUtil\ListObserver.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\InternalUtil\MicroCoroutine.cs">
+      <Link>InternalUtil\MicroCoroutine.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\InternalUtil\PriorityQueue.cs">
       <Link>InternalUtil\PriorityQueue.cs</Link>
     </Compile>
@@ -128,6 +138,9 @@
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Observable.Aggregate.cs">
       <Link>Observable.Aggregate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Observable.Awaiter.cs">
+      <Link>Observable.Awaiter.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Observable.Binding.cs">
       <Link>Observable.Binding.cs</Link>
@@ -179,6 +192,9 @@
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Operators\AsObservable.cs">
       <Link>Operators\AsObservable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Operators\AsSingleUnitObservable.cs">
+      <Link>Operators\AsSingleUnitObservable.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Operators\AsUnitObservable.cs">
       <Link>Operators\AsUnitObservable.cs</Link>
@@ -303,6 +319,9 @@
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Operators\SelectMany.cs">
       <Link>Operators\SelectMany.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Operators\SelectWhere.cs">
+      <Link>Operators\SelectWhere.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Operators\Single.cs">
       <Link>Operators\Single.cs</Link>
     </Compile>
@@ -384,6 +403,9 @@
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Operators\Where.cs">
       <Link>Operators\Where.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Operators\WhereSelect.cs">
+      <Link>Operators\WhereSelect.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Operators\WithLatestFrom.cs">
       <Link>Operators\WithLatestFrom.cs</Link>
     </Compile>
@@ -450,6 +472,9 @@
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\System\Unit.cs">
       <Link>System\Unit.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\Tasks\TaskObservableExtensions.cs">
+      <Link>Tasks\TaskObservableExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\TimeInterval.cs">
       <Link>TimeInterval.cs</Link>
     </Compile>
@@ -465,6 +490,9 @@
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\CancellationToken.cs">
       <Link>UnityEngineBridge\CancellationToken.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\CoroutineAsyncBridge.cs">
+      <Link>UnityEngineBridge\CoroutineAsyncBridge.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Diagnostics\LogEntry.cs">
       <Link>UnityEngineBridge\Diagnostics\LogEntry.cs</Link>
     </Compile>
@@ -474,11 +502,17 @@
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Diagnostics\Logger.cs">
       <Link>UnityEngineBridge\Diagnostics\Logger.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Diagnostics\ObservableDebugExtensions.cs">
+      <Link>UnityEngineBridge\Diagnostics\ObservableDebugExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Diagnostics\ObservableLogger.cs">
       <Link>UnityEngineBridge\Diagnostics\ObservableLogger.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Diagnostics\UnityDebugSink.cs">
       <Link>UnityEngineBridge\Diagnostics\UnityDebugSink.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\FrameInterval.cs">
+      <Link>UnityEngineBridge\FrameInterval.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\InspectableReactiveProperty.cs">
       <Link>UnityEngineBridge\InspectableReactiveProperty.cs</Link>
@@ -510,11 +544,20 @@
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\ObserveExtensions.cs">
       <Link>UnityEngineBridge\ObserveExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Operators\BatchFrame.cs">
+      <Link>UnityEngineBridge\Operators\BatchFrame.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Operators\DelayFrame.cs">
       <Link>UnityEngineBridge\Operators\DelayFrame.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Operators\DelayFrameSubscription.cs">
       <Link>UnityEngineBridge\Operators\DelayFrameSubscription.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Operators\FrameInterval.cs">
+      <Link>UnityEngineBridge\Operators\FrameInterval.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Operators\FrameTimeInterval.cs">
+      <Link>UnityEngineBridge\Operators\FrameTimeInterval.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Operators\FromCoroutine.cs">
       <Link>UnityEngineBridge\Operators\FromCoroutine.cs</Link>
@@ -543,6 +586,9 @@
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\ReactiveCollection.cs">
       <Link>UnityEngineBridge\ReactiveCollection.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\ReactiveCommand.cs">
+      <Link>UnityEngineBridge\ReactiveCommand.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\ReactiveDictionary.cs">
       <Link>UnityEngineBridge\ReactiveDictionary.cs</Link>
     </Compile>
@@ -551,6 +597,9 @@
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\ScenePlaybackDetector.cs">
       <Link>UnityEngineBridge\ScenePlaybackDetector.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Toolkit\ObjectPool.cs">
+      <Link>UnityEngineBridge\Tookit\ObjectPool.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Triggers\ObservableAnimatorTrigger.cs">
       <Link>UnityEngineBridge\Triggers\ObservableAnimatorTrigger.cs</Link>
@@ -605,6 +654,9 @@
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Triggers\ObservableMoveTrigger.cs">
       <Link>UnityEngineBridge\Triggers\ObservableMoveTrigger.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Triggers\ObservableParticleTrigger.cs">
+      <Link>UnityEngineBridge\Triggers\ObservableParticleTrigger.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\Triggers\ObservablePointerClickTrigger.cs">
       <Link>UnityEngineBridge\Triggers\ObservablePointerClickTrigger.cs</Link>
@@ -666,6 +718,9 @@
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\TypedMonoBehaviour.cs">
       <Link>UnityEngineBridge\TypedMonoBehaviour.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\UniRxSynchronizationContext.cs">
+      <Link>UnityEngineBridge\UniRxSynchronizationContext.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\Plugins\UniRx\Scripts\UnityEngineBridge\UnityEqualityComparer.cs">
       <Link>UnityEngineBridge\UnityEqualityComparer.cs</Link>
     </Compile>
@@ -691,7 +746,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
